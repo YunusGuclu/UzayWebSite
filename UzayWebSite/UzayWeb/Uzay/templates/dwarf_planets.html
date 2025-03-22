@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- Hero Section -->
+<div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86');">
+    <div class="hero-content">
+        <h1 class="display-1">Cüce Gezegenler</h1>
+        <p class="lead">Güneş sisteminin küçük ama önemli üyeleri</p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="space-card">
+        <h2 class="section-title">Keşfedilen Cüce Gezegenler</h2>
+        <div class="row">
+            {% for dwarf in dwarfs %}
+                <div class="col-md-4 mb-4">
+                    <div class="card bg-dark text-light h-100 planet-card">
+                        <div class="planet-icon" style="background: url('{{ dwarf.image_url }}') center/cover no-repeat;">
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">{{ dwarf.name }}</h3>
+                            <p class="card-text">
+                                <span class="badge bg-info mb-2">Cüce Gezegen</span><br>
+                                <strong><i class="fas fa-language"></i> İngilizce Adı:</strong> {{ dwarf.english_name }}<br>
+                                {% if dwarf.radius %}
+                                    <strong><i class="fas fa-ruler-combined"></i> Yarıçap:</strong> {{ dwarf.radius|floatformat:0 }} km<br>
+                                {% endif %}
+                                {% if dwarf.gravity %}
+                                    <strong><i class="fas fa-weight-hanging"></i> Yerçekimi:</strong> {{ dwarf.gravity|floatformat:2 }} m/s²<br>
+                                {% endif %}
+                                {% if dwarf.moons_count %}
+                                    <strong><i class="fas fa-moon"></i> Uydu Sayısı:</strong> {{ dwarf.moons_count }}<br>
+                                {% endif %}
+                                {% if dwarf.discovery_date %}
+                                    <strong><i class="fas fa-calendar-alt"></i> Keşif Tarihi:</strong> {{ dwarf.discovery_date }}<br>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .hero-section {
+        margin-top: -56px;
+        padding-top: 56px;
+        position: relative;
+        background-size: cover;
+        background-position: center;
+        height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .space-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 2rem;
+    }
+
+    .planet-card {
+        transition: all 0.3s ease;
+        border: none;
+        background: rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+    }
+    
+    .planet-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .planet-icon {
+        height: 200px;
+        position: relative;
+        background: linear-gradient(45deg, #1a1a1a, #2c3e50);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .badge {
+        font-size: 0.9em;
+        padding: 0.5em 0.7em;
+        margin: 0.2em;
+    }
+
+    .section-title {
+        color: white;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-weight: 300;
+        letter-spacing: 2px;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            height: 40vh;
+        }
+        
+        .hero-section h1 {
+            font-size: 2.5rem;
+        }
+
+        .planet-icon {
+            height: 150px;
+        }
+    }
+</style>
+{% endblock %}

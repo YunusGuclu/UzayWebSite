@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- Hero Section -->
+<div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1522030299830-16b8d3d049fe');">
+    <div class="hero-content">
+        <h1 class="display-1">Gezegen Uyduları</h1>
+        <p class="lead">Gezegenlerin sadık yoldaşları</p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="space-card">
+        <h2 class="section-title">Keşfedilen Uydular</h2>
+        <div class="row">
+            {% for moon in moons %}
+                <div class="col-md-4 mb-4">
+                    <div class="card bg-dark text-light h-100 planet-card">
+                        <div class="planet-icon">
+                            <i class="fas fa-moon fa-4x moon-icon"></i>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">{{ moon.name }}</h3>
+                            <p class="card-text">
+                                <span class="badge bg-secondary mb-2">Uydu</span><br>
+                                <strong><i class="fas fa-globe"></i> Gezegen:</strong> {{ moon.planet_name }}<br>
+                                {% if moon.discovery_date %}
+                                    <strong><i class="fas fa-calendar-alt"></i> Keşif Tarihi:</strong> {{ moon.discovery_date }}<br>
+                                {% endif %}
+                                {% if moon.discovered_by %}
+                                    <strong><i class="fas fa-user-astronaut"></i> Keşfeden:</strong> {{ moon.discovered_by }}<br>
+                                {% endif %}
+                                {% if moon.radius %}
+                                    <strong><i class="fas fa-ruler"></i> Yarıçap:</strong> {{ moon.radius|floatformat:0 }} km<br>
+                                {% endif %}
+                                {% if moon.gravity %}
+                                    <strong><i class="fas fa-weight-hanging"></i> Yerçekimi:</strong> {{ moon.gravity|floatformat:2 }} m/s²<br>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .hero-section {
+        margin-top: -56px;
+        padding-top: 56px;
+        position: relative;
+        background-size: cover;
+        background-position: center;
+        height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .space-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 2rem;
+    }
+
+    .planet-card {
+        transition: all 0.3s ease;
+        border: none;
+        background: rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+    }
+    
+    .planet-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .planet-icon {
+        height: 200px;
+        background: linear-gradient(45deg, #1a1a1a, #2c3e50);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .moon-icon {
+        color: #E1E1E1;  /* Gümüş tonu */
+        transition: transform 0.3s ease;
+    }
+
+    .planet-card:hover .moon-icon {
+        transform: rotate(360deg) scale(1.2);
+    }
+
+    .badge {
+        font-size: 0.9em;
+        padding: 0.5em 0.7em;
+        margin: 0.2em;
+    }
+
+    .section-title {
+        color: white;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-weight: 300;
+        letter-spacing: 2px;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            height: 40vh;
+        }
+        
+        .hero-section h1 {
+            font-size: 2.5rem;
+        }
+
+        .planet-icon {
+            height: 150px;
+        }
+    }
+</style>
+{% endblock %}

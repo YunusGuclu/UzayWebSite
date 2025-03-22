@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0');">
+    <div class="hero-content">
+        <h1 class="display-1">Güneş Sistemi</h1>
+        <p class="lead">Güneş'in etrafında dönen gezegenlerin muhteşem dünyası</p>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container my-5">
+    <div class="space-card">
+        <h2 class="section-title">Gezegenler</h2>
+        <div class="row">
+            {% for planet in planets %}
+                <div class="col-md-4 mb-4">
+                    <div class="card bg-dark text-light h-100 planet-card">
+                        <div class="planet-icon">
+                            {% if planet.english_name == "Mercury" %}
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Mercury_in_color_-_Prockter07-edit1.jpg/600px-Mercury_in_color_-_Prockter07-edit1.jpg" alt="Mercury" class="planet-image">
+                            {% elif planet.english_name == "Venus" %}
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg" alt="Venus" class="planet-image">
+                            {% elif planet.english_name == "Earth" %}
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/The_Earth_seen_from_Apollo_17.jpg/600px-The_Earth_seen_from_Apollo_17.jpg" alt="Earth" class="planet-image">
+                            {% elif planet.english_name == "Mars" %}
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/OSIRIS_Mars_true_color.jpg/600px-OSIRIS_Mars_true_color.jpg" alt="Mars" class="planet-image">
+                            {% elif planet.english_name == "Jupiter" %}
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Jupiter_and_its_shrunken_Great_Red_Spot.jpg/600px-Jupiter_and_its_shrunken_Great_Red_Spot.jpg" alt="Jupiter" class="planet-image">
+                            {% elif planet.english_name == "Saturn" %}
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Saturn_during_Equinox.jpg/600px-Saturn_during_Equinox.jpg" alt="Saturn" class="planet-image">
+                            {% elif planet.english_name == "Uranus" %}
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Uranus2.jpg/600px-Uranus2.jpg" alt="Uranus" class="planet-image">
+                            {% elif planet.english_name == "Neptune" %}
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Neptune_-_Voyager_2_%2829347980845%29_flatten_crop.jpg/600px-Neptune_-_Voyager_2_%2829347980845%29_flatten_crop.jpg" alt="Neptune" class="planet-image">
+                            {% else %}
+                                <img src="https://science.nasa.gov/wp-content/uploads/2023/09/galaxy.png" alt="Space" class="planet-image">
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">{{ planet.english_name }}</h3>
+                            <p class="card-text">
+                                <span class="badge bg-primary mb-2">{{ planet.body_type }}</span><br>
+                                {% if planet.mean_radius %}
+                                    <strong>Yarıçap:</strong> {{ planet.mean_radius|floatformat:0 }} km<br>
+                                {% endif %}
+                                {% if planet.gravity %}
+                                    <strong>Yerçekimi:</strong> {{ planet.gravity|floatformat:2 }} m/s²<br>
+                                {% endif %}
+                                <strong>Uydu Sayısı:</strong> {{ planet.moons_count }}<br>
+                                {% if planet.mass %}
+                                    <strong>Kütle:</strong> {{ planet.mass|floatformat:2 }} kg<br>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .hero-section {
+        margin-top: -56px;
+        padding-top: 56px;
+        position: relative;
+        background-size: cover;
+        background-position: center;
+        height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .space-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 2rem;
+    }
+
+    .planet-card {
+        transition: all 0.3s ease;
+        border: none;
+        background: rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+    }
+    
+    .planet-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .planet-icon {
+        height: 200px;
+        background: linear-gradient(45deg, #1a1a1a, #2c3e50);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .planet-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .planet-card:hover .planet-image {
+        transform: scale(1.1);
+    }
+
+    .badge {
+        font-size: 0.9em;
+        padding: 0.5em 0.7em;
+        margin: 0.2em;
+    }
+
+    .section-title {
+        color: white;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-weight: 300;
+        letter-spacing: 2px;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            height: 40vh;
+        }
+        
+        .hero-section h1 {
+            font-size: 2.5rem;
+        }
+
+        .planet-icon {
+            height: 150px;
+        }
+    }
+</style>
+{% endblock %}

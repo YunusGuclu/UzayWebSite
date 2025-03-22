@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa');">
+    <div class="hero-content">
+        <h1 class="display-1">ISS Canlı Takip</h1>
+        <p class="lead">Uluslararası Uzay İstasyonu'nu gerçek zamanlı izleyin</p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="space-card">
+        <h2 class="section-title">ISS Konumu</h2>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="iss-map-container">
+                    <div id="iss-map"></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="iss-info-card">
+                    <h3>Mevcut Konum</h3>
+                    <p>Enlem: {{ iss_location.latitude|floatformat:4 }}°</p>
+                    <p>Boylam: {{ iss_location.longitude|floatformat:4 }}°</p>
+                    <p>Son Güncelleme: {{ iss_location.timestamp }}</p>
+                    <hr>
+                    <h3>Uzaydaki İnsanlar</h3>
+                    <p>Şu anda uzayda {{ iss_location.people_in_space }} kişi bulunuyor.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hero-section {
+        margin-top: -56px;
+        padding-top: 56px;
+        position: relative;
+        background-size: cover;
+        background-position: center;
+        height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .space-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 2rem;
+    }
+
+    .section-title {
+        color: white;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-weight: 300;
+        letter-spacing: 2px;
+    }
+
+    .iss-map-container {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    #iss-map {
+        height: 600px;
+        width: 100%;
+        border-radius: 15px;
+    }
+
+    .iss-info-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            height: 40vh;
+        }
+        
+        .hero-section h1 {
+            font-size: 2.5rem;
+        }
+
+        #iss-map {
+            height: 400px;
+        }
+    }
+</style>
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+    // ISS Map
+    var map = L.map('iss-map').setView([{{ iss_location.latitude }}, {{ iss_location.longitude }}], 3);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    
+    var issIcon = L.icon({
+        iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/International_Space_Station.svg/32px-International_Space_Station.svg.png',
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16]
+    });
+
+    var marker = L.marker([{{ iss_location.latitude }}, {{ iss_location.longitude }}], {icon: issIcon})
+        .addTo(map)
+        .bindPopup('ISS Mevcut Konumu')
+        .openPopup();
+
+    function updateISSLocation() {
+        console.log('ISS konum güncellemesi başlatıldı...');
+        fetch('/api/iss-location/')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Yeni ISS verisi:', data);
+                
+                // Marker konumunu güncelle
+                marker.setLatLng([data.latitude, data.longitude]);
+                map.panTo([data.latitude, data.longitude]);
+                
+                // Bilgi kartını güncelle
+                document.querySelector('p:contains("Enlem")').textContent = `Enlem: ${data.latitude.toFixed(4)}°`;
+                document.querySelector('p:contains("Boylam")').textContent = `Boylam: ${data.longitude.toFixed(4)}°`;
+                document.querySelector('p:contains("Son Güncelleme")').textContent = 
+                    `Son Güncelleme: ${new Date(data.timestamp).toLocaleString('tr-TR')}`;
+                document.querySelector('p:contains("uzayda")').textContent = 
+                    `Şu anda uzayda ${data.people_in_space} kişi bulunuyor.`;
+            })
+            .catch(error => {
+                console.error('ISS konum güncelleme hatası:', error);
+            });
+    }
+
+    // İlk yükleme
+    updateISSLocation();
+
+    // Her 5 saniyede bir güncelle
+    setInterval(updateISSLocation, 5000);
+</script>
+{% endblock %}
+{% endblock %}

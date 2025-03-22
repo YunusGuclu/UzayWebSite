@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1 class="display-1">Uzayı Keşfet</h1>
+            <p class="lead">Uzay keşfi ve keşiflerine açılan kapınız!</p>
+            <a href="#launches" class="btn btn-outline-light btn-lg mt-3">Keşfetmeye Başla</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- ISS Location -->
+        <section id="iss" class="space-card">
+            <h2 class="section-title">ISS Canlı Takip</h2>
+            {% if iss_location %}
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="iss-map-container">
+                            <div id="iss-map" style="height: 400px; border-radius: 15px;"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="iss-info-card">
+                            <h3>Mevcut Konum</h3>
+                            <p>Enlem: {{ iss_location.latitude|floatformat:4 }}°</p>
+                            <p>Boylam: {{ iss_location.longitude|floatformat:4 }}°</p>
+                            <p>Son Güncelleme: {{ iss_location.timestamp }}</p>
+                            <hr>
+                            <h3>Uzaydaki İnsanlar</h3>
+                            <p>Şu anda uzayda {{ iss_location.people_in_space }} kişi bulunuyor.</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Solar System -->
+        <section id="planets" class="space-card">
+            <h2 class="section-title">Güneş Sistemimiz</h2>
+            <div class="row">
+                {% for planet in planets %}
+                    <div class="col-md-3 mb-4">
+                        <div class="card bg-dark text-light">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ planet.english_name }}</h5>
+                                <p class="card-text">
+                                    <small>Tür: {{ planet.body_type }}</small><br>
+                                    {% if planet.mean_radius %}
+                                        Yarıçap: {{ planet.mean_radius|floatformat:0 }} km<br>
+                                    {% endif %}
+                                    Uydu Sayısı: {{ planet.moons_count }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Latest News -->
+        <section id="news" class="space-card">
+            <h2 class="section-title">Uzay Haberleri</h2>
+            <div class="row">
+                {% for news in latest_news %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card bg-dark text-light h-100">
+                            <div class="news-image-container">
+                                {% if news.image_url %}
+                                    <img src="{{ news.image_url }}" 
+                                         class="card-img-top" 
+                                         alt="{{ news.title }}"
+                                         style="height: 200px; object-fit: cover;"
+                                         onerror="this.parentElement.innerHTML = '<div style=\'height: 200px; background: linear-gradient(45deg, #1a1a1a, #2c3e50); display: flex; align-items: center; justify-content: center;\'><span style=\'font-size: 4rem;\'>🚀</span></div>'">
+                                {% else %}
+                                    <div style="height: 200px; background: linear-gradient(45deg, #1a1a1a, #2c3e50); display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 4rem;">🚀</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ news.title }}</h5>
+                                <p class="card-text text-muted">{{ news.published_date|date:"d F Y" }}</p>
+                                <p class="card-text flex-grow-1">{{ news.summary|truncatewords:30 }}</p>
+                                <a href="{{ news.news_url }}" class="btn btn-outline-light mt-auto" target="_blank">Devamını Oku</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="text-center mt-4">
+                <a href="{% url 'news' %}" class="btn btn-outline-light btn-lg">Tüm Haberleri Gör</a>
+            </div>
+        </section>
+
+        <!-- Latest SpaceX Launch -->
+        <section id="launches" class="space-card">
+            <h2 class="section-title">Son SpaceX Fırlatması</h2>
+            {% if latest_launch %}
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src="{{ latest_launch.mission_patch }}" class="img-fluid rounded" alt="Görev Logosu">
+                    </div>
+                    <div class="col-md-8">
+                        <h3>{{ latest_launch.mission_name }}</h3>
+                        <p class="text-light">Fırlatma Tarihi: {{ latest_launch.launch_date|date:"j F Y H:i" }}</p>
+                        <p>{{ latest_launch.details }}</p>
+                        {% if latest_launch.video_link %}
+                            <a href="{{ latest_launch.video_link }}" class="btn btn-primary" target="_blank">
+                                Fırlatmayı İzle
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ISS Map
+    {% if iss_location %}
+    var map = L.map('iss-map').setView([{{ iss_location.latitude }}, {{ iss_location.longitude }}], 3);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    
+    var issIcon = L.icon({
+        iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/International_Space_Station.svg/32px-International_Space_Station.svg.png',
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16]
+    });
+
+    var marker = L.marker([{{ iss_location.latitude }}, {{ iss_location.longitude }}], {icon: issIcon})
+        .addTo(map)
+        .bindPopup('ISS Mevcut Konumu')
+        .openPopup();
+
+    function updateISSLocation() {
+        console.log('ISS konum güncellemesi başlatıldı...');
+        fetch('/api/iss-location/')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Yeni ISS verisi:', data);
+                
+                // Marker konumunu güncelle
+                marker.setLatLng([data.latitude, data.longitude]);
+                map.panTo([data.latitude, data.longitude]);
+                
+                // Bilgi kartını güncelle
+                document.querySelector('p:contains("Enlem")').textContent = `Enlem: ${data.latitude.toFixed(4)}°`;
+                document.querySelector('p:contains("Boylam")').textContent = `Boylam: ${data.longitude.toFixed(4)}°`;
+                document.querySelector('p:contains("Son Güncelleme")').textContent = 
+                    `Son Güncelleme: ${new Date(data.timestamp).toLocaleString('tr-TR')}`;
+                document.querySelector('p:contains("uzayda")').textContent = 
+                    `Şu anda uzayda ${data.people_in_space} kişi bulunuyor.`;
+            })
+            .catch(error => {
+                console.error('ISS konum güncelleme hatası:', error);
+            });
+    }
+
+    // İlk yükleme
+    updateISSLocation();
+
+    // Her 5 saniyede bir güncelle
+    setInterval(updateISSLocation, 5000);
+    {% endif %}
+
+    // Yumuşak kaydırma
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
+{% endblock %}

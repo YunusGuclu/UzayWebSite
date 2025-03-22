@@ -1,0 +1,129 @@
+<!-- asteroids.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- Hero Section -->
+<div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1614726365952-510103b1bbb4');">
+    <div class="hero-content">
+        <h1 class="display-1">Asteroidler</h1>
+        <p class="lead">Güneş sistemindeki gizemli kaya parçaları</p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="space-card">
+        <h2 class="section-title">Keşfedilen Asteroidler</h2>
+        <div class="row">
+            {% for asteroid in asteroids %}
+                <div class="col-md-4 mb-4">
+                    <div class="card bg-dark text-light h-100 planet-card">
+                        <div class="planet-icon">
+                            <i class="fas fa-meteor fa-4x asteroid-icon"></i>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">{{ asteroid.name }}</h3>
+                            <p class="card-text">
+                                <span class="badge bg-warning mb-2">Asteroid</span><br>
+                                {% if asteroid.designation %}
+                                    <strong><i class="fas fa-fingerprint"></i> Tanımlama:</strong> {{ asteroid.designation }}<br>
+                                {% endif %}
+                                {% if asteroid.diameter %}
+                                    <strong><i class="fas fa-ruler"></i> Çap:</strong> {{ asteroid.diameter|floatformat:2 }} km<br>
+                                {% endif %}
+                                {% if asteroid.orbit_period %}
+                                    <strong><i class="fas fa-sync"></i> Yörünge Periyodu:</strong> {{ asteroid.orbit_period|floatformat:1 }} gün<br>
+                                {% endif %}
+                                <strong><i class="fas fa-exclamation-triangle"></i> Potansiyel Tehlike:</strong> 
+                                {% if asteroid.is_potentially_hazardous %}
+                                    <span class="text-danger">Evet <i class="fas fa-exclamation-circle"></i></span>
+                                {% else %}
+                                    <span class="text-success">Hayır <i class="fas fa-check-circle"></i></span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .hero-section {
+        margin-top: -56px;
+        padding-top: 56px;
+        position: relative;
+        background-size: cover;
+        background-position: center;
+        height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .planet-card {
+        transition: all 0.3s ease;
+        border: none;
+        background: rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+    }
+    
+    .planet-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .planet-icon {
+        height: 150px;
+        background: linear-gradient(45deg, #1a1a1a, #2c3e50);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .asteroid-icon {
+        color: #FFB74D;
+        transition: transform 0.3s ease;
+    }
+
+    .planet-card:hover .asteroid-icon {
+        transform: rotate(360deg) scale(1.2);
+    }
+
+    .badge {
+        font-size: 0.9em;
+        padding: 0.5em 0.7em;
+        margin: 0.2em;
+    }
+
+    .section-title {
+        color: white;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-weight: 300;
+        letter-spacing: 2px;
+    }
+</style>
+{% endblock %}

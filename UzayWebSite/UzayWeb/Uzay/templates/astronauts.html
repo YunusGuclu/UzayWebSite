@@ -1,0 +1,192 @@
+<!-- astronauts.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1614728263952-84ea256f9679');">
+    <div class="hero-content">
+        <h1 class="display-1">Uzaydaki Astronotlar</h1>
+        <p class="lead">Şu anda uzayda görev yapan cesur kaşifler</p>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container my-5">
+    <section class="space-card">
+        <h2 class="section-title">Aktif Astronotlar</h2>
+        
+        <!-- İstatistik Kartları -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-dark text-light mb-4">
+                    <div class="card-body text-center">
+                        <h3 class="card-title">Toplam Astronot</h3>
+                        <p class="display-4">{{ astronauts.count }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-dark text-light mb-4">
+                    <div class="card-body text-center">
+                        <h3 class="card-title">Uzay İstasyonları</h3>
+                        {% regroup astronauts by spacecraft as spacecraft_list %}
+                        {% for spacecraft in spacecraft_list %}
+                        <p class="mb-1">{{ spacecraft.grouper }}: {{ spacecraft.list|length }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-dark text-light mb-4">
+                    <div class="card-body text-center">
+                        <h3 class="card-title">Uzay Ajansları</h3>
+                        {% regroup astronauts by agency as agency_list %}
+                        {% for agency in agency_list %}
+                        <p class="mb-1">{{ agency.grouper }}: {{ agency.list|length }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-dark text-light mb-4">
+                    <div class="card-body text-center">
+                        <h3 class="card-title">Görevler</h3>
+                        {% regroup astronauts by role as role_list %}
+                        {% for role in role_list %}
+                        <p class="mb-1">{{ role.grouper }}: {{ role.list|length }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Astronot Kartları -->
+        <div class="row">
+            {% for astronaut in astronauts %}
+            <div class="col-md-4 mb-4">
+                <div class="card bg-dark text-light h-100 astronaut-card">
+                    <div class="astronaut-icon">
+                        <span class="astronaut-emoji">👨‍🚀</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ astronaut.name }}</h5>
+                        <p class="card-text">
+                            <span class="badge bg-info mb-2">{{ astronaut.role }}</span><br>
+                            <strong>Uzay Aracı:</strong> {{ astronaut.spacecraft }}<br>
+                            <strong>Ajans:</strong> <span class="badge bg-primary">{{ astronaut.agency }}</span><br>
+                            <strong>Durum:</strong> 
+                            {% if astronaut.status == 'active' %}
+                            <span class="badge bg-success">Aktif Görevde</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Görev Tamamlandı</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">
+                            Son Güncelleme: {{ astronaut.last_updated|date:"d.m.Y H:i" }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    Şu anda uzayda aktif astronot bulunmuyor.
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+<style>
+    .astronaut-card {
+        transition: all 0.3s ease;
+        border: none;
+        background: rgba(0, 0, 0, 0.5);
+    }
+    
+    .astronaut-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .astronaut-icon {
+        height: 200px;
+        background: linear-gradient(45deg, #1a1a1a, #2c3e50);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .astronaut-emoji {
+        font-size: 5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .astronaut-card:hover .astronaut-emoji {
+        transform: scale(1.2) rotate(5deg);
+    }
+
+    .badge {
+        font-size: 0.9em;
+        padding: 0.5em 0.7em;
+        margin: 0.2em;
+    }
+
+    .hero-section {
+        margin-top: -56px;
+        padding-top: 56px;
+        position: relative;
+        background-size: cover;
+        background-position: center;
+        height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .space-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            height: 40vh;
+        }
+        
+        .hero-section h1 {
+            font-size: 2.5rem;
+        }
+
+        .astronaut-icon {
+            height: 150px;
+        }
+
+        .astronaut-emoji {
+            font-size: 4rem;
+        }
+    }
+</style>
+{% endblock %}
